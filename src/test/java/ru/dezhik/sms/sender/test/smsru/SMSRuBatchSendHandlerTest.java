@@ -3,10 +3,10 @@ package ru.dezhik.sms.sender.test.smsru;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ru.dezhik.sms.sender.InvocationStatus;
+import ru.dezhik.sms.sender.api.InvocationStatus;
 import ru.dezhik.sms.sender.RequestValidationException;
 import ru.dezhik.sms.sender.api.smsru.Pair;
-import ru.dezhik.sms.sender.api.smsru.SMSRuResultStatus;
+import ru.dezhik.sms.sender.api.smsru.SMSRuResponseStatus;
 import ru.dezhik.sms.sender.api.smsru.send.SMSRuBatchSendHandler;
 import ru.dezhik.sms.sender.api.smsru.send.SMSRuBatchSendRequest;
 import ru.dezhik.sms.sender.api.smsru.send.SMSRuSendResponse;
@@ -74,7 +74,7 @@ public class SMSRuBatchSendHandlerTest {
         final SMSRuSendResponse response = handler.parseResponse(
                 request, "100\n201630-1000001\n201630-1000002\nbalance=18.38");
         Assert.assertEquals(InvocationStatus.QUEUED, request.getStatus());
-        Assert.assertEquals(SMSRuResultStatus.IN_QUEUE, response.getResponseStatus());
+        Assert.assertEquals(SMSRuResponseStatus.IN_QUEUE, response.getResponseStatus());
         Assert.assertEquals(new Double(18.38d), response.getBalance());
         Assert.assertEquals(2, response.getMsgIds().size());
         Assert.assertEquals("201630-1000001", response.getMsgIds().get(0));
@@ -90,7 +90,7 @@ public class SMSRuBatchSendHandlerTest {
     public void parsingSuccessfulBatchTestSendResponseTest() {
         final SMSRuBatchSendRequest request = new SMSRuBatchSendRequest();
         final SMSRuSendResponse response = handler.parseResponse(request, "100\n000-00000\n000-00000");
-        Assert.assertEquals(SMSRuResultStatus.IN_QUEUE, response.getResponseStatus());
+        Assert.assertEquals(SMSRuResponseStatus.IN_QUEUE, response.getResponseStatus());
         Assert.assertEquals(2, response.getMsgIds().size());
         Assert.assertEquals("000-00000", response.getMsgIds().get(0));
         Assert.assertEquals("000-00000", response.getMsgIds().get(1));

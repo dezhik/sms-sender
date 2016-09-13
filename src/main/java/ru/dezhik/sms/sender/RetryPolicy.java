@@ -1,11 +1,12 @@
 package ru.dezhik.sms.sender;
 
 import ru.dezhik.sms.sender.api.ApiRequest;
+import ru.dezhik.sms.sender.api.ApiResponse;
 
 /**
  * @author ilya.dezhin
  */
-public interface RetryPolicy<Req extends ApiRequest, Resp extends SimpleResponse> {
+public interface RetryPolicy<Req extends ApiRequest, Resp extends ApiResponse> {
     /**
      *
      * @param request request instance to the remote API

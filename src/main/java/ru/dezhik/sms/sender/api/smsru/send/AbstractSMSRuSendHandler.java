@@ -7,10 +7,10 @@ import java.util.concurrent.TimeUnit;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-import ru.dezhik.sms.sender.InvocationStatus;
+import ru.dezhik.sms.sender.api.InvocationStatus;
 import ru.dezhik.sms.sender.RequestValidationException;
 import ru.dezhik.sms.sender.api.smsru.AbstractSMSRuApiHandler;
-import ru.dezhik.sms.sender.api.smsru.SMSRuResultStatus;
+import ru.dezhik.sms.sender.api.smsru.SMSRuResponseStatus;
 
 /**
  * @author ilya.dezhin
@@ -65,7 +65,7 @@ public abstract class AbstractSMSRuSendHandler<Req extends AbstractSMSRuSendRequ
         parseAndSetStatus(request, response, tokens);
 
         if (request.getStatus() == InvocationStatus.RESPONSE_PARSING_ERROR
-                || response.getResponseStatus() != SMSRuResultStatus.IN_QUEUE) {
+                || response.getResponseStatus() != SMSRuResponseStatus.IN_QUEUE) {
             return response;
         }
 

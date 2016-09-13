@@ -8,12 +8,12 @@ import org.apache.http.message.BasicNameValuePair;
 
 import ru.dezhik.sms.sender.RequestValidationException;
 import ru.dezhik.sms.sender.api.smsru.AbstractSMSRuApiHandler;
-import ru.dezhik.sms.sender.api.smsru.SMSRuSimpleResponse;
+import ru.dezhik.sms.sender.api.smsru.SMSRuApiResponse;
 
 /**
  * @author ilya.dezhin
  */
-public class SMSRuStopListDeleteHandler extends AbstractSMSRuApiHandler<SMSRuStopListDeleteRequest, SMSRuSimpleResponse> {
+public class SMSRuStopListDeleteHandler extends AbstractSMSRuApiHandler<SMSRuStopListDeleteRequest, SMSRuApiResponse> {
     @Override
     public String getMethodPath() {
         return "/stoplist/del";
@@ -32,8 +32,8 @@ public class SMSRuStopListDeleteHandler extends AbstractSMSRuApiHandler<SMSRuSto
     }
 
     @Override
-    public SMSRuSimpleResponse parseResponse(SMSRuStopListDeleteRequest request, String responseStr) {
-        final SMSRuSimpleResponse response = new SMSRuSimpleResponse();
+    public SMSRuApiResponse parseResponse(SMSRuStopListDeleteRequest request, String responseStr) {
+        final SMSRuApiResponse response = new SMSRuApiResponse();
         final StringTokenizer tokenizer = tokenizeResponse(responseStr);
         parseAndSetStatus(request, response, tokenizer);
         return response;

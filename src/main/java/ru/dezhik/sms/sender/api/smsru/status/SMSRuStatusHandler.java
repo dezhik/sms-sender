@@ -8,12 +8,12 @@ import org.apache.http.message.BasicNameValuePair;
 
 import ru.dezhik.sms.sender.RequestValidationException;
 import ru.dezhik.sms.sender.api.smsru.AbstractSMSRuApiHandler;
-import ru.dezhik.sms.sender.api.smsru.SMSRuSimpleResponse;
+import ru.dezhik.sms.sender.api.smsru.SMSRuApiResponse;
 
 /**
  * @author ilya.dezhin
  */
-public class SMSRuStatusHandler extends AbstractSMSRuApiHandler<SMSRuStatusRequest, SMSRuSimpleResponse> {
+public class SMSRuStatusHandler extends AbstractSMSRuApiHandler<SMSRuStatusRequest, SMSRuApiResponse> {
     @Override
     public String getMethodPath() {
         return "/sms/status";
@@ -32,8 +32,8 @@ public class SMSRuStatusHandler extends AbstractSMSRuApiHandler<SMSRuStatusReque
     }
 
     @Override
-    public SMSRuSimpleResponse parseResponse(SMSRuStatusRequest request, String responseStr) {
-        final SMSRuSimpleResponse response = new SMSRuSimpleResponse();
+    public SMSRuApiResponse parseResponse(SMSRuStatusRequest request, String responseStr) {
+        final SMSRuApiResponse response = new SMSRuApiResponse();
         StringTokenizer tokenizer = tokenizeResponse(responseStr);
         parseAndSetStatus(request, response, tokenizer);
         return response;

@@ -4,13 +4,13 @@ import java.util.StringTokenizer;
 
 import ru.dezhik.sms.sender.api.AbstractApiRequestHandler;
 import ru.dezhik.sms.sender.api.ApiRequest;
-import ru.dezhik.sms.sender.InvocationStatus;
-import ru.dezhik.sms.sender.SimpleResponse;
+import ru.dezhik.sms.sender.api.InvocationStatus;
+import ru.dezhik.sms.sender.api.ApiResponse;
 
 /**
  * @author ilya.dezhin
  */
-public abstract class AbstractSMSRuApiHandler<Req extends ApiRequest, Resp extends SimpleResponse>
+public abstract class AbstractSMSRuApiHandler<Req extends ApiRequest, Resp extends ApiResponse>
     extends AbstractApiRequestHandler<Req, Resp> {
 
     protected StringTokenizer tokenizeResponse(String responseStr) {
@@ -26,7 +26,7 @@ public abstract class AbstractSMSRuApiHandler<Req extends ApiRequest, Resp exten
         }
 
         try {
-            response.setResponseStatus(SMSRuResultStatus.forValue(Integer.parseInt(tokens.nextToken().trim())));
+            response.setResponseStatus(SMSRuResponseStatus.forValue(Integer.parseInt(tokens.nextToken().trim())));
         } catch (NumberFormatException e) {
             request.setStatus(InvocationStatus.RESPONSE_PARSING_ERROR);
             return;

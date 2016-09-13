@@ -8,7 +8,7 @@ import java.util.Map;
  *
  * @author ilya.dezhin
  */
-public enum SMSRuResultStatus {
+public enum SMSRuResponseStatus {
     /** sms with given id was not found. */
     SMS_NOT_FOUND(-1),
     /** SMS was taken for sending. */
@@ -23,7 +23,7 @@ public enum SMSRuResultStatus {
     DELIVERY_ERROR_TIMEOUT(104),
     /** Can't be delivered, removed by operator. */
     DELIVERY_ERROR_DELETED(105),
-    /**  Can't be delivered. */
+    /** Can't be delivered. */
     DELIVERY_ERROR_PHONE_FAILURE(106),
     /** Can't be delivered. Unknown reason. */
     DELIVERY_ERROR_UNKNOWN(107),
@@ -70,22 +70,22 @@ public enum SMSRuResultStatus {
     /** User's account is not approved, approve is done with code sent to you in SMS after the registration. */
     ACCOUNT_NOT_APPROVED(302),
     ;
-    private final static Map<Integer, SMSRuResultStatus> statusMap =
-            new HashMap<Integer, SMSRuResultStatus>(SMSRuResultStatus.values().length, 1f);
+    private final static Map<Integer, SMSRuResponseStatus> statusMap =
+            new HashMap<Integer, SMSRuResponseStatus>(SMSRuResponseStatus.values().length, 1f);
 
     static {
-        for (SMSRuResultStatus status : values()) {
+        for (SMSRuResponseStatus status : values()) {
             statusMap.put(status.code, status);
         }
     }
 
     public final int code;
 
-    SMSRuResultStatus(int code) {
+    SMSRuResponseStatus(int code) {
         this.code = code;
     }
 
-    public static SMSRuResultStatus forValue(int code) {
+    public static SMSRuResponseStatus forValue(int code) {
         return statusMap.get(code);
     }
 }

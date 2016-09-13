@@ -1,12 +1,12 @@
 package ru.dezhik.sms.sender.api.smsru.status;
 
 import ru.dezhik.sms.sender.api.ApiRequest;
-import ru.dezhik.sms.sender.api.smsru.SMSRuSimpleResponse;
+import ru.dezhik.sms.sender.api.smsru.SMSRuApiResponse;
 
 /**
  * @author ilya.dezhin
  */
-public class SMSRuStatusRequest extends ApiRequest<SMSRuStatusHandler, SMSRuSimpleResponse> {
+public class SMSRuStatusRequest extends ApiRequest<SMSRuStatusHandler, SMSRuApiResponse> {
     private final String id;
 
     public SMSRuStatusRequest(String id) {

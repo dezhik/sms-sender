@@ -1,12 +1,12 @@
 package ru.dezhik.sms.sender.api.smsru.stoplist.add;
 
 import ru.dezhik.sms.sender.api.ApiRequest;
-import ru.dezhik.sms.sender.api.smsru.SMSRuSimpleResponse;
+import ru.dezhik.sms.sender.api.smsru.SMSRuApiResponse;
 
 /**
  * @author ilya.dezhin
  */
-public class SMSRuStopListAddRequest extends ApiRequest<SMSRuStopListAddHandler, SMSRuSimpleResponse> {
+public class SMSRuStopListAddRequest extends ApiRequest<SMSRuStopListAddHandler, SMSRuApiResponse> {
     private String phone;
     private String comment;
 

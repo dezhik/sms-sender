@@ -5,9 +5,9 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ru.dezhik.sms.sender.InvocationStatus;
+import ru.dezhik.sms.sender.api.InvocationStatus;
 import ru.dezhik.sms.sender.RequestValidationException;
-import ru.dezhik.sms.sender.api.smsru.SMSRuResultStatus;
+import ru.dezhik.sms.sender.api.smsru.SMSRuResponseStatus;
 import ru.dezhik.sms.sender.api.smsru.send.SMSRuSendHandler;
 import ru.dezhik.sms.sender.api.smsru.send.SMSRuSendRequest;
 import ru.dezhik.sms.sender.api.smsru.send.SMSRuSendResponse;
@@ -87,7 +87,7 @@ public class SMSRuSendHandlerTest {
                 request,
                 "100\n201630-1000000\nbalance=0.53");
         Assert.assertEquals(InvocationStatus.QUEUED, request.getStatus());
-        Assert.assertEquals(SMSRuResultStatus.IN_QUEUE, response.getResponseStatus());
+        Assert.assertEquals(SMSRuResponseStatus.IN_QUEUE, response.getResponseStatus());
         Assert.assertEquals(new Double(0.53d), response.getBalance());
         Assert.assertEquals(1, response.getMsgIds().size());
         Assert.assertEquals("201630-1000000", response.getMsgIds().get(0));
@@ -105,7 +105,7 @@ public class SMSRuSendHandlerTest {
                 request,
                 "100\n000-00000");
         Assert.assertEquals(InvocationStatus.QUEUED, request.getStatus());
-        Assert.assertEquals(SMSRuResultStatus.IN_QUEUE, response.getResponseStatus());
+        Assert.assertEquals(SMSRuResponseStatus.IN_QUEUE, response.getResponseStatus());
         Assert.assertEquals(1, response.getMsgIds().size());
         Assert.assertEquals("000-00000", response.getMsgIds().get(0));
     }
@@ -115,7 +115,7 @@ public class SMSRuSendHandlerTest {
         final SMSRuSendRequest request = new SMSRuSendRequest();
         SMSRuSendResponse response = handler.parseResponse(request, "200\n");
         Assert.assertEquals(InvocationStatus.QUEUED, request.getStatus());
-        Assert.assertEquals(SMSRuResultStatus.WRONG_API_ID, response.getResponseStatus());
+        Assert.assertEquals(SMSRuResponseStatus.WRONG_API_ID, response.getResponseStatus());
         Assert.assertEquals(0, response.getMsgIds().size());
         Assert.assertNull(response.getBalance());
     }

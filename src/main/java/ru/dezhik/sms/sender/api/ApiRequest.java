@@ -2,13 +2,10 @@ package ru.dezhik.sms.sender.api;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import ru.dezhik.sms.sender.InvocationStatus;
-import ru.dezhik.sms.sender.SimpleResponse;
-
 /**
  * @author ilya.dezhin
  */
-public abstract class ApiRequest<H extends ApiRequestHandler, R extends SimpleResponse> {
+public abstract class ApiRequest<H extends ApiRequestHandler, R extends ApiResponse> {
     public abstract H getHandler();
 
     /**

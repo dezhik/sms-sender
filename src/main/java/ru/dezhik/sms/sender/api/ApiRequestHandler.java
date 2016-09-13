@@ -6,12 +6,11 @@ import org.apache.http.NameValuePair;
 
 import ru.dezhik.sms.sender.RequestValidationException;
 import ru.dezhik.sms.sender.SenderServiceConfiguration;
-import ru.dezhik.sms.sender.SimpleResponse;
 
 /**
  * @author ilya.dezhin
  */
-public interface ApiRequestHandler<Req extends ApiRequest, Resp extends SimpleResponse> {
+public interface ApiRequestHandler<Req extends ApiRequest, Resp extends ApiResponse> {
     /**
      *
      * @return

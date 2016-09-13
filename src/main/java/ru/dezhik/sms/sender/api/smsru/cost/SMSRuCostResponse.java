@@ -1,11 +1,11 @@
 package ru.dezhik.sms.sender.api.smsru.cost;
 
-import ru.dezhik.sms.sender.api.smsru.SMSRuSimpleResponse;
+import ru.dezhik.sms.sender.api.smsru.SMSRuApiResponse;
 
 /**
  * @author ilya.dezhin
  */
-public class SMSRuCostResponse extends SMSRuSimpleResponse {
+public class SMSRuCostResponse extends SMSRuApiResponse {
     private Double price;
     private Integer smsNeeded;
 

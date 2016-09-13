@@ -19,6 +19,8 @@ import org.apache.http.util.EntityUtils;
 
 import ru.dezhik.sms.sender.api.ApiRequest;
 import ru.dezhik.sms.sender.api.ApiRequestHandler;
+import ru.dezhik.sms.sender.api.InvocationStatus;
+import ru.dezhik.sms.sender.api.ApiResponse;
 import ru.dezhik.sms.sender.api.smsru.auth.AuthProvider;
 import ru.dezhik.sms.sender.api.smsru.auth.DefaultAuthProvider;
 
@@ -62,7 +64,7 @@ public class SenderService {
      *          or handler was not found and not specified in request class
      *          or incorrect API URI was constructed.
      */
-    public <H extends ApiRequestHandler, R extends SimpleResponse> R execute(final ApiRequest<H, R> request) {
+    public <H extends ApiRequestHandler, R extends ApiResponse> R execute(final ApiRequest<H, R> request) {
         ApiRequestHandler handler = handlersRegistry.get(request.getClass());
         if (handler == null) {
             handler = request.getHandler();
@@ -132,7 +134,7 @@ public class SenderService {
         return response;
     }
 
-    protected <Req extends ApiRequest, Resp extends SimpleResponse> RetryPolicy findApplicableRetryPolicy(
+    protected <Req extends ApiRequest, Resp extends ApiResponse> RetryPolicy findApplicableRetryPolicy(
             Req request, Resp response
     ) {
         for (RetryPolicy retryPolicy : config.getRetryPolicies()) {

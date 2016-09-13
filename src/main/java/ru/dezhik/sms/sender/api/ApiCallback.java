@@ -1,13 +1,11 @@
 package ru.dezhik.sms.sender.api;
 
-import ru.dezhik.sms.sender.SimpleResponse;
-
 /**
  * Provides a convenient way to execute parsed API response asynchronously.
  * Can be bypassed into {@link ru.dezhik.sms.sender.AsyncSenderService}
  * @author ilya.dezhin
  */
-public interface ApiCallback<Req extends ApiRequest, Resp extends SimpleResponse> {
+public interface ApiCallback<Req extends ApiRequest, Resp extends ApiResponse> {
     /**
      * Checks if this callback is applicable to the following request and response.
      * @param request

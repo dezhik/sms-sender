@@ -3,9 +3,9 @@ package ru.dezhik.sms.sender.test.smsru;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ru.dezhik.sms.sender.InvocationStatus;
+import ru.dezhik.sms.sender.api.InvocationStatus;
 import ru.dezhik.sms.sender.RequestValidationException;
-import ru.dezhik.sms.sender.api.smsru.SMSRuResultStatus;
+import ru.dezhik.sms.sender.api.smsru.SMSRuResponseStatus;
 import ru.dezhik.sms.sender.api.smsru.cost.SMSRuCostHandler;
 import ru.dezhik.sms.sender.api.smsru.cost.SMSRuCostRequest;
 import ru.dezhik.sms.sender.api.smsru.cost.SMSRuCostResponse;
@@ -69,7 +69,7 @@ public class SMSRuCostHandlerTest {
         final SMSRuCostRequest request = new SMSRuCostRequest();
         final SMSRuCostResponse response = handler.parseResponse(request, "202");
         Assert.assertEquals(InvocationStatus.QUEUED, request.getStatus());
-        Assert.assertEquals(SMSRuResultStatus.SENDER_ERROR, response.getResponseStatus());
+        Assert.assertEquals(SMSRuResponseStatus.SENDER_ERROR, response.getResponseStatus());
         Assert.assertNull(response.getPrice());
         Assert.assertNull(response.getSmsNeeded());
     }

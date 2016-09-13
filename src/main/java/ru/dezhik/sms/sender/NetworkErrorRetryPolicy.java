@@ -3,11 +3,13 @@ package ru.dezhik.sms.sender;
 import java.util.concurrent.TimeUnit;
 
 import ru.dezhik.sms.sender.api.ApiRequest;
+import ru.dezhik.sms.sender.api.InvocationStatus;
+import ru.dezhik.sms.sender.api.ApiResponse;
 
 /**
  * @author ilya.dezhin
  */
-public class NetworkErrorRetryPolicy<Req extends ApiRequest, Resp extends SimpleResponse> implements RetryPolicy<Req, Resp> {
+public class NetworkErrorRetryPolicy<Req extends ApiRequest, Resp extends ApiResponse> implements RetryPolicy<Req, Resp> {
     private final int maxExecutionAttempts;
     private final long delayMs;
 

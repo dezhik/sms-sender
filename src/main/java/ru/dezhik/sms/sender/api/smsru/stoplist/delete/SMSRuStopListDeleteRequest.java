@@ -1,12 +1,12 @@
 package ru.dezhik.sms.sender.api.smsru.stoplist.delete;
 
 import ru.dezhik.sms.sender.api.ApiRequest;
-import ru.dezhik.sms.sender.api.smsru.SMSRuSimpleResponse;
+import ru.dezhik.sms.sender.api.smsru.SMSRuApiResponse;
 
 /**
  * @author ilya.dezhin
  */
-public class SMSRuStopListDeleteRequest extends ApiRequest<SMSRuStopListDeleteHandler, SMSRuSimpleResponse> {
+public class SMSRuStopListDeleteRequest extends ApiRequest<SMSRuStopListDeleteHandler, SMSRuApiResponse> {
     private String phone;
 
     @Override

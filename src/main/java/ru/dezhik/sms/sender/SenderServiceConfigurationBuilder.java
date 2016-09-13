@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -237,7 +236,7 @@ public class SenderServiceConfigurationBuilder {
                 partnerId,
                 authProviderClass != null ? authProviderClass : DefaultAuthProvider.class,
                 httpClient != null ? httpClient : HttpClients.createDefault(),
-                executorService != null ? executorService : Executors.newSingleThreadExecutor(),
+                executorService,
                 Collections.unmodifiableList(retryPolicies != null ? retryPolicies : new LinkedList<RetryPolicy>()),
                 asyncTerminationTimeoutMs
         );

@@ -1,4 +1,4 @@
-package ru.dezhik.sms.sender;
+package ru.dezhik.sms.sender.api;
 
 /**
  * @author ilya.dezhin

@@ -3,12 +3,14 @@ package ru.dezhik.sms.sender;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import ru.dezhik.sms.sender.api.ApiCallback;
 import ru.dezhik.sms.sender.api.ApiRequest;
 import ru.dezhik.sms.sender.api.ApiRequestHandler;
+import ru.dezhik.sms.sender.api.ApiResponse;
 
 /**
  *
@@ -22,7 +24,9 @@ public class AsyncSenderService {
     public AsyncSenderService(SenderServiceConfiguration config) {
         this.config = config;
         this.senderService = new SenderService(config);
-        this.apiExecutors = config.getExecutorService();
+        this.apiExecutors = config.getExecutorService() != null
+                ? config.getExecutorService()
+                : Executors.newSingleThreadExecutor();
     }
 
     /**
@@ -33,7 +37,7 @@ public class AsyncSenderService {
      * @return response wrapped in {@link Future}.
      * Note that response could be null if network error occurred and retries didn't help.
      */
-    public <H extends ApiRequestHandler, R extends SimpleResponse> Future<R> execute(
+    public <H extends ApiRequestHandler, R extends ApiResponse> Future<R> execute(
             final ApiRequest<H, R> request
     ) {
         return apiExecutors.submit(new Callable<R>() {
@@ -49,7 +53,7 @@ public class AsyncSenderService {
      * @param request
      * @param callbacks which should be executed after response parsing
      */
-    public <H extends ApiRequestHandler, R extends SimpleResponse> void execute(
+    public <H extends ApiRequestHandler, R extends ApiResponse> void execute(
             final ApiRequest<H, R> request,
             final ApiCallback... callbacks
     ) {

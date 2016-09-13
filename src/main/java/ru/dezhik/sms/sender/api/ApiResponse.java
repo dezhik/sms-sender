@@ -1,12 +1,15 @@
-package ru.dezhik.sms.sender;
+package ru.dezhik.sms.sender.api;
+
+import ru.dezhik.sms.sender.SenderServiceConfiguration;
+import ru.dezhik.sms.sender.api.smsru.SMSRuResponseStatus;
 
 /**
  * @author ilya.dezhin
  */
-public class SimpleResponse<T> {
+public class ApiResponse<T> {
 
     /**
-     * SMS sending system specific status, e.g. {@link ru.dezhik.sms.sender.api.smsru.SMSRuResultStatus}
+     * SMS sending system specific status, e.g. {@link SMSRuResponseStatus}
      */
     protected T responseStatus;
     /**

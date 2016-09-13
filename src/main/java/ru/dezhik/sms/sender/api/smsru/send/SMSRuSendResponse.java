@@ -3,12 +3,12 @@ package ru.dezhik.sms.sender.api.smsru.send;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.dezhik.sms.sender.api.smsru.SMSRuSimpleResponse;
+import ru.dezhik.sms.sender.api.smsru.SMSRuApiResponse;
 
 /**
  * @author ilya.dezhin
  */
-public class SMSRuSendResponse extends SMSRuSimpleResponse {
+public class SMSRuSendResponse extends SMSRuApiResponse {
     List<String> msgIds = new ArrayList<String>();
     Double balance;
 
