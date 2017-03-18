@@ -1,7 +1,8 @@
 apply plugin: 'java'
+apply plugin: 'maven'
 
-group 'ru.dezhik.sms'
-version '0.1.0'
+project.group 'ru.dezhik.sms'
+project.version '0.1.1'
 
 repositories {
     mavenCentral()
@@ -22,3 +23,34 @@ dependencies {
     compile 'org.apache.httpcomponents:httpclient:' + project.httpcomponentsVersion
 }
 
+task generatePom {
+    doLast {
+        pom {
+            project {
+                name 'SMS sender'
+                description 'Library for sending SMS via sms.ru gateway'
+                url 'https://github.com/dezhik/sms-sender'
+                packaging 'jar'
+                scm {
+                    connection 'scm:git:https://github.com/dezhik/sms-sender.git'
+                    url 'https://github.com/dezhik/sms-sender'
+                }
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+                properties {
+                    maven {
+                        compiler {
+                            source compileJava.sourceCompatibility
+                            target compileJava.targetCompatibility
+                        }
+                    }
+                }
+            }
+        }.writeTo("pom.xml")
+    }
+}
