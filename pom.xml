@@ -15,6 +15,13 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+  <developers>
+    <developer>
+      <id>dezhik</id>
+      <name>Dezhin Ilya</name>
+      <email>dezhin.ilya@gmail.com</email>
+    </developer>
+  </developers>
   <scm>
     <connection>scm:git:https://github.com/dezhik/sms-sender.git</connection>
     <url>https://github.com/dezhik/sms-sender</url>

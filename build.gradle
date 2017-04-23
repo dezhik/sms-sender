@@ -23,6 +23,16 @@ dependencies {
     compile 'org.apache.httpcomponents:httpclient:' + project.httpcomponentsVersion
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
 task generatePom {
     doLast {
         pom {
@@ -48,6 +58,13 @@ task generatePom {
                             source compileJava.sourceCompatibility
                             target compileJava.targetCompatibility
                         }
+                    }
+                }
+                developers {
+                    developer {
+                        id 'dezhik'
+                        name 'Dezhin Ilya'
+                        email 'dezhin.ilya@gmail.com'
                     }
                 }
             }

@@ -59,8 +59,8 @@ public class SenderService {
      * @param request API request to execute
      *
      * @return API response constructed by the handler or null if network exception occurred and retries failed.
-     * @throws {@link IllegalStateException} if remote API server returns not success (200) status code
-     * @throws {@link IllegalArgumentException} if request validation fails
+     * @throws IllegalStateException if remote API server didn't return HTTP status 200 OK
+     * @throws IllegalArgumentException if request validation fails
      *          or handler was not found and not specified in request class
      *          or incorrect API URI was constructed.
      */
@@ -151,7 +151,7 @@ public class SenderService {
      *
      * @param requestClass which would be processed by the handler.
      * @param handler used for validating and parsing requests of requestClass type.
-     * @throws {@link IllegalArgumentException} if requestClass or handler is null.
+     * @throws IllegalArgumentException if requestClass or handler is null.
      */
     public void registerHandler(Class<? extends ApiRequest> requestClass, ApiRequestHandler handler) {
         if (requestClass == null) {
@@ -165,7 +165,7 @@ public class SenderService {
 
     /**
      * Closes {@link CloseableHttpClient} if exists.
-     * @throws IOException
+     * @throws IOException if an I/O error occurs
      */
     public void shutdown() throws IOException {
         if (httpClient != null) {

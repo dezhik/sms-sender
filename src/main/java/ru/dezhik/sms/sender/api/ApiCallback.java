@@ -14,8 +14,8 @@ public interface ApiCallback<Req extends ApiRequest, Resp extends ApiResponse> {
     boolean apply(Req request, Resp response);
 
     /**
-     * This function is called iff {@link #apply ) returned true.
-     * Is designed for saving or udpdating a row in a database, logging, etc.
+     * The method is called iff {@link #apply} returned true.
+     * Is designed for saving or updating a row in a database, logging, etc.
      * @param request
      * @param response could be null if network error occurred.
      */

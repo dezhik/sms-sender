@@ -78,7 +78,7 @@ public class AsyncSenderService {
      *
      * @param requestClass specifies {@link Class} which instances would be processed by the handler
      * @param handler for validating and parsing requests of such type
-     * @throws {@link IllegalArgumentException} if requestClass or handler is null.
+     * @throws IllegalArgumentException if requestClass or handler is null.
      */
     public void registerHandler(Class<? extends ApiRequest> requestClass, ApiRequestHandler handler) {
         senderService.registerHandler(requestClass, handler);

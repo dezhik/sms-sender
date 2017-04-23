@@ -3,8 +3,7 @@ package ru.dezhik.sms.sender.api.smsru.auth;
 /**
  * Taken from commons-codec
  *
- * Converts hexadecimal Strings. The charset used for certain operation can be set, the default is set in
- * {@link #DEFAULT_CHARSET_NAME}
+ * Converts hexadecimal Strings.
  *
  * This class is thread-safe.
  *
@@ -26,7 +25,6 @@ public class Hex {
      * @param data
      *            a byte[] to convert to Hex characters
      * @return A char[] containing hexadecimal characters
-     * @since 1.4
      */
     protected static String encodeHex(final byte[] data) {
         final int l = data.length;
