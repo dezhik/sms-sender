@@ -9,9 +9,11 @@ public enum InvocationStatus {
     SUCCESS(false),
     VALIDATION_ERROR(true),
     NETWORK_ERROR(true),
+    RESPONSE_CODE_ERROR(true),
     RESPONSE_PARSING_ERROR(true),
     ERROR(true),
     ;
+
     final boolean abnormal;
 
     InvocationStatus(boolean abnormal) {

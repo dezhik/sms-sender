@@ -23,7 +23,7 @@ public class AsyncSenderService {
 
     public AsyncSenderService(SenderServiceConfiguration config) {
         this.config = config;
-        this.senderService = new SenderService(config);
+        this.senderService = new SenderService(config, true);
         this.apiExecutors = config.getExecutorService() != null
                 ? config.getExecutorService()
                 : Executors.newSingleThreadExecutor();

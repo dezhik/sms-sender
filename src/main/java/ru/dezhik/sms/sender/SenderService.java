@@ -1,11 +1,19 @@
 package ru.dezhik.sms.sender;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanRegistrationException;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -19,8 +27,8 @@ import org.apache.http.util.EntityUtils;
 
 import ru.dezhik.sms.sender.api.ApiRequest;
 import ru.dezhik.sms.sender.api.ApiRequestHandler;
-import ru.dezhik.sms.sender.api.InvocationStatus;
 import ru.dezhik.sms.sender.api.ApiResponse;
+import ru.dezhik.sms.sender.api.InvocationStatus;
 import ru.dezhik.sms.sender.api.smsru.auth.AuthProvider;
 import ru.dezhik.sms.sender.api.smsru.auth.DefaultAuthProvider;
 
@@ -29,15 +37,21 @@ import ru.dezhik.sms.sender.api.smsru.auth.DefaultAuthProvider;
  */
 @ThreadSafe
 public class SenderService {
-
+    private static final AtomicInteger idCounter = new AtomicInteger();
     private final SenderServiceConfiguration config;
     private final CloseableHttpClient httpClient;
     private final AuthProvider authProvider;
 
     private final Map<Class<? extends ApiRequest>, ApiRequestHandler> handlersRegistry =
             new ConcurrentHashMap<Class<? extends ApiRequest>, ApiRequestHandler>();
+    private final SenderServiceStat serviceStat;
+    private final ObjectName mxbeanName;
 
     public SenderService(SenderServiceConfiguration config) {
+        this(config, false);
+    }
+
+    SenderService(SenderServiceConfiguration config, boolean async) {
         if (config == null) {
             throw new IllegalStateException();
         }
@@ -47,6 +61,10 @@ public class SenderService {
                 : DefaultAuthProvider.class;
         try {
             this.authProvider = authClass.getConstructor(SenderServiceConfiguration.class).newInstance(config);
+            MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            mxbeanName = new ObjectName("ru.dezhik.sms.sender:type=SenderService-" + idCounter.incrementAndGet());
+            serviceStat = new SenderServiceStat(async);
+            mbs.registerMBean(serviceStat, mxbeanName);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
@@ -65,26 +83,25 @@ public class SenderService {
      *          or incorrect API URI was constructed.
      */
     public <H extends ApiRequestHandler, R extends ApiResponse> R execute(final ApiRequest<H, R> request) {
-        ApiRequestHandler handler = handlersRegistry.get(request.getClass());
-        if (handler == null) {
-            handler = request.getHandler();
-            if (handler == null) {
-                throw new IllegalArgumentException();
-            }
-            handler.setConfig(config);
-            handlersRegistry.put(request.getClass(), handler);
-        }
+        //finds proper handler or throws IllegalStateException
+        final ApiRequestHandler handler = getRequestHandler(request);
+        serviceStat.requests.incrementAndGet();
 
-        //Validating request
+        R response = null;
         try {
+            // Validating request params
             handler.validate(request);
+            // Executing API request to the remote server and parsing result
+            response = executeImpl(handler, request);
         } catch (RequestValidationException e) {
-            request.setStatus(InvocationStatus.VALIDATION_ERROR);
-            request.setException(e);
-            return null;
+            processStatus(request, InvocationStatus.VALIDATION_ERROR, e);
         }
 
-        //Executing API request to the remote server and parsing result.
+        return response;
+    }
+
+    private <H extends ApiRequestHandler, R extends ApiResponse> R executeImpl(
+            final ApiRequestHandler handler, final ApiRequest<H, R> request) {
         final String methodURI = config.getApiHost() + handler.getMethodPath();
         R response = null;
         RetryPolicy retryPolicy = null;
@@ -93,6 +110,7 @@ public class SenderService {
             try {
                 request.incrementExecutionAttempt();
                 if (retryPolicy != null) {
+                    serviceStat.retries.incrementAndGet();
                     try {
                         Thread.sleep(retryPolicy.getDelayDurationMs());
                     } catch (InterruptedException e) {
@@ -107,31 +125,47 @@ public class SenderService {
 
                 final HttpResponse httpResponse = httpClient.execute(httpPost);
                 final int code = httpResponse.getStatusLine().getStatusCode();
-                if (httpResponse.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-                    throw new IllegalStateException("sms.ru api wrong response code: " + code);
-                }
+                if (code == HttpStatus.SC_OK) {
+                    final String responseBody = EntityUtils.toString(httpResponse.getEntity());
+                    // request.status could be changed here, e.g. to RESPONSE_PARSING_ERROR
+                    response = (R) handler.parseResponse(request, responseBody);
 
-                final String responseBody = EntityUtils.toString(httpResponse.getEntity());
-                response = (R) handler.parseResponse(request, responseBody);
+                    if (config.isReturnPlainResponse() && response != null) {
+                        response.setPlainResponse(responseBody);
+                    }
 
-                if (config.isReturnPlainResponse() && response != null) {
-                    response.setPlainResponse(responseBody);
-                }
-
-                if (request.getStatus() == InvocationStatus.RUNNING && response != null) {
-                    request.setStatus(InvocationStatus.SUCCESS);
+                    if (request.getStatus() == InvocationStatus.RUNNING && response != null) {
+                        processStatus(request, InvocationStatus.SUCCESS, null);
+                        break;
+                    } else {
+                        processStatus(request, request.getStatus(), null);
+                    }
+                } else {
+                    processStatus(request, InvocationStatus.RESPONSE_CODE_ERROR,
+                            new RemoteException("sms.ru api wrong response code: " + code));
                 }
             } catch (IOException e) {
-                request.setStatus(InvocationStatus.NETWORK_ERROR);
-                request.setException(e);
+                processStatus(request, InvocationStatus.NETWORK_ERROR, e);
             } catch (URISyntaxException e) {
-                request.setStatus(InvocationStatus.ERROR);
-                request.setException(e);
-                return null;
+                processStatus(request, InvocationStatus.ERROR, e);
+                break;
             }
         } while ((retryPolicy = findApplicableRetryPolicy(request, response)) != null);
 
         return response;
+    }
+
+    private <H extends ApiRequestHandler, R extends ApiResponse> void processStatus(
+            ApiRequest<H, R> request, InvocationStatus status, Throwable ex) {
+        request.setStatus(status);
+        request.setException(ex);
+        serviceStat.reportStatus(status);
+
+        if (status == InvocationStatus.SUCCESS) {
+            serviceStat.reportSucceededRequest(request);
+        } else {
+            serviceStat.reportFailedRequest(request);
+        }
     }
 
     protected <Req extends ApiRequest, Resp extends ApiResponse> RetryPolicy findApplicableRetryPolicy(
@@ -168,8 +202,31 @@ public class SenderService {
      * @throws IOException if an I/O error occurs
      */
     public void shutdown() throws IOException {
+        if (mxbeanName != null) {
+            MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            try {
+                mbs.unregisterMBean(mxbeanName);
+            } catch (InstanceNotFoundException e) {
+            } catch (MBeanRegistrationException e) {
+            }
+        }
+
         if (httpClient != null) {
             httpClient.close();
         }
+    }
+
+    private ApiRequestHandler getRequestHandler(final ApiRequest<? extends ApiRequestHandler, ?> request) {
+        ApiRequestHandler handler = handlersRegistry.get(request.getClass());
+        if (handler == null) {
+            handler = request.getHandler();
+            if (handler == null) {
+                processStatus(request, InvocationStatus.ERROR, null);
+                throw new IllegalArgumentException();
+            }
+            handler.setConfig(config);
+            handlersRegistry.put(request.getClass(), handler);
+        }
+        return handler;
     }
 }

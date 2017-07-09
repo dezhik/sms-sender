@@ -1,8 +1,9 @@
 apply plugin: 'java'
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 project.group 'ru.dezhik'
-project.version '0.1.1'
+project.version '0.1.2'
 
 repositories {
     mavenCentral()
@@ -15,6 +16,14 @@ compileJava {
 
 project.ext {
     httpcomponentsVersion = '4.3.1'
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
 }
 
 dependencies {
