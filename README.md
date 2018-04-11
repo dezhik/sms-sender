@@ -2,7 +2,7 @@
 
 A simple way for sending SMS via [sms.ru](http://sms.ru) with Java.
 
-At first sign up on sms.ru and receive your api_id, login, password which would be needed for authentication your requests. [sms.ru API description](https://sms.ru/?panel=api), unfortunatelly the page is still only in Russian.
+At first sign up on sms.ru and receive your api_id, login, password which would be needed for authenticating your requests. [sms.ru API description](https://sms.ru/api), unfortunately the page is still only in Russian.
 
 ### Configuration
 
@@ -85,27 +85,84 @@ There is a special setting for AsyncSenderService ```shutdown()``` in [SenderSer
 
 The most efficient way to use the library is to create [SenderService](https://github.com/dezhik/sms-sender/blob/master/src/main/java/ru/dezhik/sms/sender/SenderService.java) or [AsyncSenderService](https://github.com/dezhik/sms-sender/blob/master/src/main/java/ru/dezhik/sms/sender/AsyncSenderService.java) instance once then share it between threads and use numerous times. 
 
-Synchronous execution example:
+Creating simple [SenderServiceConfiguration](https://github.com/dezhik/sms-sender/blob/master/src/main/java/ru/dezhik/sms/sender/SenderServiceConfiguration.java). Note that you should provide your own ApiID:
+```
+SenderServiceConfiguration config = SenderServiceConfigurationBuilder.create()
+                .setApiId("00000000-0000-0000-0000-000000000000")
+                .setTestSendingEnabled(true)
+                .setReturnPlainResponse(true)
+                .build();
+```
+
+
+Synchronous [SMSRuCostRequest](https://github.com/dezhik/sms-sender/tree/master/src/main/java/ru/dezhik/sms/sender/api/smsru/cost/SMSRuCostRequest.java) execution example:
 
 ```
 SenderService sender = new SenderService(senderConfiguration);
 SMSRuCostRequest sendRequest = new SMSRuCostRequest();
-sendRequest.setReceiver("+71234567890");
+sendRequest.setReceiver("+79123456789");
 sendRequest.setText("Hello world");
-SMSRuSendResponse sendResponse = sender.execute(sendRequest);
+SMSRuCostResponse getCostResponse = sender.execute(sendRequest);
 if (sendRequest.getStatus() == InvocationStatus.SUCCESS) {
-    ;//request was executed successfully now you can handle sendResponse
+    /**
+     * request was executed successfully now you can handle sendResponse
+     * always check service API manual page for determine which codes should be treated as successful
+     */
+    if (getCostResponse.getResponseStatus() == SMSRuResponseStatus.IN_QUEUE) {
+        System.out.println(String.format("Success. Price %4.2f, smsNeeded %d", getCostResponse.getPrice(), getCostResponse.getSmsNeeded()));
+    } else {
+        System.out.println(String.format("Failed with status %s", getCostResponse.getResponseStatus()));
+    }
+} else {
+    /**
+     * Something went wrong and request failed, check sendRequest.getStatus()
+     * usually the problem is in params validation or network or parsing response from the remote API.
+     * {@link ru.dezhik.sms.sender.api.InvocationStatus}
+     */
+    if (sendRequest.getStatus().isAbnormal()) {
+        sendRequest.getException().printStackTrace();
+    }
 }
 ...
 sender.shutdown();
 ```
    
+Synchronous [SMSRuSendRequest](https://github.com/dezhik/sms-sender/tree/master/src/main/java/ru/dezhik/sms/sender/api/smsru/send/SMSRuSendRequest.java) execution example:
+```
+SenderService sender = new SenderService(config);
+SMSRuSendRequest sendRequest = new SMSRuSendRequest();
+sendRequest.setReceivers(Collections.singleton("+79123456789"));
+sendRequest.setText("Hello world");
+SMSRuSendResponse sendResponse = sender.execute(sendRequest);
+if (sendRequest.getStatus() == InvocationStatus.SUCCESS) {
+    /**
+     * request was executed successfully now you can handle sendResponse
+     * always check service API manual page for determine which codes should be treated as successful
+     */
+    if (sendResponse.getResponseStatus() == SMSRuResponseStatus.IN_QUEUE) {
+        System.out.println(String.format("Success. Balance %4.2f, smsIds %s",
+                sendResponse.getBalance(), Arrays.toString(sendResponse.getMsgIds().toArray())));
+    } else {
+        System.out.println(String.format("Failed with status %s", sendResponse.getResponseStatus()));
+    }
+} else {
+    /**
+     * Something went wrong and request failed, check sendRequest.getStatus()
+     * usually the problem is in params validation or network or parsing response from the remote API.
+     * {@link ru.dezhik.sms.sender.api.InvocationStatus}
+     */
+    if (sendRequest.getStatus().isAbnormal()) {
+        sendRequest.getException().printStackTrace();
+    }
+}
+```
+
 Simple asynchronous request execution:
 
 ```     
 AsyncSenderService asyncSender = new AsyncSenderService(senderConfiguration);
 SMSRuCostRequest sendRequest = new SMSRuCostRequest();
-sendRequest.setReceiver("+71234567890");
+sendRequest.setReceiver("+79123456789");
 sendRequest.setText("Hello world");
 Future<SMSRuSendResponse> sendFuture = asyncSender.execute(sendResponse);
 ...
@@ -122,7 +179,7 @@ Asynchronous request execution with callbacks, [ApiCallback](https://github.com/
 ```
 AsyncSenderService asyncSender = new AsyncSenderService(senderConfiguration);
 SMSRuCostRequest sendRequest = new SMSRuCostRequest();
-sendRequest.setReceiver("+71234567890");
+sendRequest.setReceiver("+79123456789");
 sendRequest.setText("Hello world");
 ApiCallback successCallback = new ApiCallback() {
     @Override
