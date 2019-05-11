@@ -10,6 +10,14 @@ public class SMSRuSendRequest extends AbstractSMSRuSendRequest<SMSRuSendHandler>
     Collection<String> receivers = new LinkedList<String>();
     String text;
 
+    public SMSRuSendRequest() {
+    }
+
+    public SMSRuSendRequest(String text, Collection<String> receivers) {
+        this.text = text;
+        this.receivers = receivers;
+    }
+
     @Override
     public SMSRuSendHandler getHandler() {
         return new SMSRuSendHandler();

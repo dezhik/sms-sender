@@ -1,3 +1,7 @@
 build/*
 .gradle/*
 *.iml
+.idea/*
+test.properties
+gradle/*
+target/*

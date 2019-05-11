@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ru.dezhik</groupId>
   <artifactId>sms-sender</artifactId>
-  <version>0.1.1</version>
+  <version>0.1.3</version>
   <name>SMS sender</name>
   <description>Library for sending SMS via sms.ru gateway</description>
   <url>https://github.com/dezhik/sms-sender</url>
@@ -34,13 +34,13 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
-      <version>4.3.1</version>
+      <version>4.4.11</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>4.3.1</version>
+      <version>4.5.8</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

@@ -3,7 +3,7 @@ apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
 project.group 'ru.dezhik'
-project.version '0.1.2'
+project.version '0.1.3'
 
 repositories {
     mavenCentral()
@@ -15,7 +15,6 @@ compileJava {
 }
 
 project.ext {
-    httpcomponentsVersion = '4.3.1'
 }
 
 publishing {
@@ -28,8 +27,8 @@ publishing {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
-    compile 'org.apache.httpcomponents:httpcore:' + project.httpcomponentsVersion
-    compile 'org.apache.httpcomponents:httpclient:' + project.httpcomponentsVersion
+    compile group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.11'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.8'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

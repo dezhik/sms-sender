@@ -18,7 +18,8 @@ import javax.management.ObjectName;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
-import org.apache.http.annotation.ThreadSafe;
+import org.apache.http.annotation.Contract;
+import org.apache.http.annotation.ThreadingBehavior;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -35,12 +36,13 @@ import ru.dezhik.sms.sender.api.smsru.auth.DefaultAuthProvider;
 /**
  * @author ilya.dezhin
  */
-@ThreadSafe
+@Contract(threading = ThreadingBehavior.SAFE)
 public class SenderService {
     private static final AtomicInteger idCounter = new AtomicInteger();
     private final SenderServiceConfiguration config;
     private final CloseableHttpClient httpClient;
     private final AuthProvider authProvider;
+    private final String serviceName;
 
     private final Map<Class<? extends ApiRequest>, ApiRequestHandler> handlersRegistry =
             new ConcurrentHashMap<Class<? extends ApiRequest>, ApiRequestHandler>();
@@ -57,13 +59,16 @@ public class SenderService {
         }
         this.config = config;
         this.httpClient = config.getHttpClient() != null ? config.getHttpClient() : HttpClients.createDefault();
-        Class<? extends AuthProvider> authClass = config.getAuthProviderClass() != null ? config.getAuthProviderClass()
+
+        final Class<? extends AuthProvider> authClass = config.getAuthProviderClass() != null
+                ? config.getAuthProviderClass()
                 : DefaultAuthProvider.class;
         try {
             this.authProvider = authClass.getConstructor(SenderServiceConfiguration.class).newInstance(config);
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-            mxbeanName = new ObjectName("ru.dezhik.sms.sender:type=SenderService-" + idCounter.incrementAndGet());
-            serviceStat = new SenderServiceStat(async);
+            this.serviceName = "SenderService-" + idCounter.incrementAndGet();
+            this.mxbeanName = new ObjectName("ru.dezhik.sms.sender:type=" + serviceName);
+            this.serviceStat = new SenderServiceStat(async);
             mbs.registerMBean(serviceStat, mxbeanName);
         } catch (Exception e) {
             throw new IllegalStateException(e);
@@ -228,5 +233,10 @@ public class SenderService {
             handlersRegistry.put(request.getClass(), handler);
         }
         return handler;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getName() + "@" + serviceName;
     }
 }
