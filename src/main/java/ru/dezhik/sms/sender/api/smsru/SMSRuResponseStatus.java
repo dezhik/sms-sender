@@ -9,6 +9,12 @@ import java.util.Map;
  * @author ilya.dezhin
  */
 public enum SMSRuResponseStatus {
+    /**
+     * Status not present in sms.ru api!
+     * It helps preserve backwards compatibility during migration of sending API from plain to json version.
+     * Is set iff request contained multiple receivers/messages and API responded with different statuses for messages.
+     * */
+    MIXED(-127),
     /** sms with given id was not found. */
     SMS_NOT_FOUND(-1),
     /** SMS was taken for sending. */
@@ -69,13 +75,73 @@ public enum SMSRuResponseStatus {
     WRONG_PASSWORD(301),
     /** User's account is not approved, approve is done with code sent to you in SMS after the registration. */
     ACCOUNT_NOT_APPROVED(302),
+    /** Passed confirmation code is invalid. */
+    CONFIRMATION_CODE_INVALID(303),
+    /** Too many confirmation codes were sent. Please, try later. */
+    CONFIRMATION_CODE_SENDING_LIMIT(304),
+    /** Too many failed attempts for confirmation code check. Please, try later. */
+    CONFIRMATION_CODE_CHECK_LIMIT(305),
+    /** Phone number has not confirmed yet. Still waiting for incoming phone call. */
+    CALLCHECK_PHONE_NOT_CONFIRMED(400),
+    /** Phone number was successfully confirmed. */
+    CALLCHECK_PHONE_CONFIRMED(401),
+    /** The time allotted for verification has expired or the check_id is incorrect. */
+    CALLCHECK_EXPIRED_OR_INCORRECT(402),
+
+
+    /** API error. Please try later. */
+    SERVER_ERROR(500),
+    /**
+     * IP user from the TOR network, too many such messages in a short time.
+     * Can be configured in account settings.
+     * */
+    LIMIT_TOR_USER(501),
+    /**
+     * The user's IP does not match his country, too many such messages in a short period of time.
+     * Can be configured in account settings.
+     */
+    LIMIT_COUNTRY_USER(502),
+    /**
+     * Too many messages to this country in a short period of time.
+     * Can be configured in account settings.
+     */
+    LIMIT_COUNTRY(503),
+    /**
+     * Too many authorization codes abroad in a short period of time.
+     * Can be configured in account settings.
+     */
+    LIMIT_COUNTRY_CONFIRMATION_CODE(504),
+    /**
+     * Too many messages to one IP address.
+     * Can be configured in account settings.
+     */
+    LIMIT_MESSAGES_IP(505),
+    /**
+     * Too many messages with end user's IP address belonging to the hosting company (%s in the last 10 minutes).
+     */
+    LIMIT_MESSAGES_SUSPICIOUS_IP(506),
+    /**
+     * 507	IP адрес пользователя указан неверно, либо идет из частной подсети (192.*, 10.*, итд).
+     * Manage IP black and whitelist at https://sms.ru/?panel=settings&subpanel=send
+     */
+    WRONG_USER_IP(507),
+    /**
+     * Reached limit of allowed calls in 5 minutes.
+     * Manage limit at https://sms.ru/?panel=settings&subpanel=send
+     */
+    LIMIT_PHONE_CALLS(508),
+    /** Invalid	callback, e.g. URL doesn't start with http:// */
+    INVALID_CALLBACK(901),
+    /** Callback not found. Probably was previously removed.  */
+    CALLBACK_NOT_FOUND(902),
     ;
     private final static Map<Integer, SMSRuResponseStatus> statusMap =
-            new HashMap<Integer, SMSRuResponseStatus>(SMSRuResponseStatus.values().length, 1f);
+            new HashMap<>(SMSRuResponseStatus.values().length, 1f);
 
     static {
         for (SMSRuResponseStatus status : values()) {
-            statusMap.put(status.code, status);
+            if (statusMap.put(status.code, status) != null)
+                throw new IllegalStateException("Constants with same code detected: " + status.code);
         }
     }
 

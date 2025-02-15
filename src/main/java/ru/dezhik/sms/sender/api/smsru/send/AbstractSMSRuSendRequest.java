@@ -9,7 +9,7 @@ import ru.dezhik.sms.sender.api.smsru.AbstractSMSRuApiHandler;
  */
 public abstract class AbstractSMSRuSendRequest<H extends AbstractSMSRuApiHandler> extends ApiRequest<H, SMSRuSendResponse> {
     /**
-     * If is not present, than {@link SenderServiceConfiguration#getFromName()}}
+     * If is not present, then {@link SenderServiceConfiguration#getFromName()}}
      * or phone number you registered with would be used.
      */
     String from;

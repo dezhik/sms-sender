@@ -26,10 +26,9 @@ public abstract class AbstractSMSRuApiHandler<Req extends ApiRequest, Resp exten
         }
 
         try {
-            response.setResponseStatus(SMSRuResponseStatus.forValue(Integer.parseInt(tokens.nextToken().trim())));
+            response.setStatus(SMSRuResponseStatus.forValue(Integer.parseInt(tokens.nextToken().trim())));
         } catch (NumberFormatException e) {
             request.setStatus(InvocationStatus.RESPONSE_PARSING_ERROR);
-            return;
         }
     }
 
@@ -43,6 +42,13 @@ public abstract class AbstractSMSRuApiHandler<Req extends ApiRequest, Resp exten
             }
         }
         return res;
+    }
+
+    protected Double parseDoubleSafe(String value) {
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException nfe) {}
+        return null;
     }
 
     protected Integer parseIntSafe(Req request, StringTokenizer tokens) {

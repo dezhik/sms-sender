@@ -5,3 +5,5 @@ build/*
 test.properties
 gradle/*
 target/*
+gradlew*
+.DS_Store

@@ -1,5 +1,6 @@
 package ru.dezhik.sms.sender.api;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
@@ -41,5 +42,5 @@ public interface ApiRequestHandler<Req extends ApiRequest, Resp extends ApiRespo
      * @param responseStr should not be null
      * @return parsed response
      */
-    Resp parseResponse(Req request, String responseStr);
+    Resp parseResponse(Req request, String responseStr) throws IOException;
 }

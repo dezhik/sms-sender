@@ -13,6 +13,7 @@ import ru.dezhik.sms.sender.api.smsru.auth.AuthProvider;
 public class SenderServiceConfiguration {
     final String apiHost;
     final boolean testSendingEnabled;
+    final String testPhoneNumber;
     final boolean translitEnabled;
     /** could be useful while debugging some error */
     final boolean returnPlainResponse;
@@ -30,6 +31,7 @@ public class SenderServiceConfiguration {
     SenderServiceConfiguration(
             final String apiHost,
             final boolean testSendingEnabled,
+            final String testPhoneNumber,
             final boolean translitEnabled,
             final boolean returnPlainResponse,
             final String apiId,
@@ -44,6 +46,7 @@ public class SenderServiceConfiguration {
             final long asyncTerminationTimeoutMs) {
         this.apiHost = apiHost;
         this.testSendingEnabled = testSendingEnabled;
+        this.testPhoneNumber = testPhoneNumber;
         this.translitEnabled = translitEnabled;
         this.returnPlainResponse = returnPlainResponse;
         this.apiId = apiId;
@@ -64,6 +67,10 @@ public class SenderServiceConfiguration {
 
     public boolean isTestSendingEnabled() {
         return testSendingEnabled;
+    }
+
+    public String getTestPhoneNumber() {
+        return testPhoneNumber;
     }
 
     public CloseableHttpClient getHttpClient() {

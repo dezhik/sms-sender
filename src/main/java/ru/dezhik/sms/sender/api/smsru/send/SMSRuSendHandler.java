@@ -3,6 +3,8 @@ package ru.dezhik.sms.sender.api.smsru.send;
 import java.util.Collection;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.json.JsonReadFeature;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 

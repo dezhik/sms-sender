@@ -19,8 +19,9 @@ import ru.dezhik.sms.sender.api.smsru.auth.DefaultAuthProvider;
  * @author ilya.dezhin
  */
 public class SenderServiceConfigurationBuilder {
-    String apiHost = "http://sms.ru/";
+    String apiHost = "https://sms.ru/";
     boolean testSendingEnabled;
+    String testPhoneNumber;
     boolean translitEnabled;
     //could be useful while debugging some error
     boolean returnPlainResponse;
@@ -164,6 +165,11 @@ public class SenderServiceConfigurationBuilder {
             this.testSendingEnabled = testSendingEnabled.booleanValue();
         }
 
+        String testPhoneNumber = properties.getProperty("testPhoneNumber");
+        if (testPhoneNumber != null && !testPhoneNumber.trim().isEmpty()) {
+            this.testPhoneNumber = testPhoneNumber.trim();
+        }
+
         Boolean translitEnabled = getNullableBoolean(properties.getProperty("translitEnabled"));
         if (translitEnabled != null) {
             this.translitEnabled = translitEnabled.booleanValue();
@@ -227,6 +233,7 @@ public class SenderServiceConfigurationBuilder {
         return new SenderServiceConfiguration(
                 apiHost,
                 testSendingEnabled,
+                testPhoneNumber,
                 translitEnabled,
                 returnPlainResponse,
                 apiId,
